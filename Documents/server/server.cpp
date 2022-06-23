@@ -1,4 +1,7 @@
 #include"server.h"
+#include<fstream>
+#include <QFile>
+#include <QTextStream>
 
 Server::Server()
 {
@@ -19,7 +22,7 @@ void Server:: incomingConnection(qintptr socketDescriptor)
     connect(socket, &QTcpSocket::readyRead,this,&Server::slotReadyRead);
     connect(socket, &QTcpSocket::disconnected,socket,&QTcpSocket::deleteLater);
 
-    Sockets.push_back(socket);//QTcpSocket
+    Sockets.push_back(socket);
     qDebug()<<"client connected"<<socketDescriptor;
 }
 
@@ -58,6 +61,14 @@ void Server::slotReadyRead()
             in>>time>>str;
             nextBlockSize=0;
             qDebug()<<str;
+            QFile file("C:/Users/denso/Documents/server/path.txt");
+            if(file.open(QIODevice::WriteOnly | QIODevice::Text))
+                {
+                        QTextStream writeStream(&file);
+                        writeStream << str;
+                        file.flush();
+                        file.close();
+                }
             SendToClient(str);
             break;
         }
