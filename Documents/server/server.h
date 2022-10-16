@@ -4,6 +4,9 @@
 #include<QTcpSocket>
 #include<QVector>
 #include<QTime>
+#include <QFile>
+#include <QTextStream>
+#include <thread>
 
 class Server : public QTcpServer
 {

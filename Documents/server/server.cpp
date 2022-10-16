@@ -2,16 +2,30 @@
 #include<fstream>
 #include <QFile>
 #include <QTextStream>
+#include <thread>
+void threadFunction(QFile file,QString str)
+{
+     // do smth
+    if(file.open(QIODevice::WriteOnly | QIODevice::Text))
+        {
+                QTextStream writeStream(&file);
+                writeStream << str;
+
+                file.flush();
+                file.close();
+                //_sleep(1);
+        }
+}
 
 Server::Server()
 {
-    if(this->listen(QHostAddress::Any,2323))
+    if(this->listen(QHostAddress::Any,2323))//QHostAddress("178.178.86.48")
     {
         qDebug()<<"start";
     }
     else
     {
-        qDebug()<<"error";
+        qDebug()<<"erro";
     }
     nextBlockSize=0;
 }
@@ -58,17 +72,29 @@ void Server::slotReadyRead()
             }
             QString str;
             QTime time;
-            in>>time>>str;
+            in>>str;
             nextBlockSize=0;
             qDebug()<<str;
-            QFile file("C:/Users/denso/Documents/server/path.txt");
-            if(file.open(QIODevice::WriteOnly | QIODevice::Text))
+             QFile file("C:/Users/denso/Documents/server/path.txt");
+           /* if(file.open(QIODevice::WriteOnly | QIODevice::Text))
                 {
                         QTextStream writeStream(&file);
                         writeStream << str;
+
                         file.flush();
                         file.close();
-                }
+                        //_sleep(1);
+                }*/
+             std::thread thr([& in,& file,& str](){while(!(file.open(QIODevice::WriteOnly | QIODevice::Text)))
+                 {}
+                         QTextStream writeStream(&file);
+                         writeStream << str;
+
+                         file.flush();
+                         file.close();
+                         //_sleep(1);
+                 });
+            thr.join();
             SendToClient(str);
             break;
         }
