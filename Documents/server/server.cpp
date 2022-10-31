@@ -71,7 +71,7 @@ void Server::slotReadyRead()
                 break;
             }
             QString str;
-            QTime time;
+            //QTime time;
             in>>str;
             nextBlockSize=0;
             qDebug()<<str;
@@ -85,8 +85,7 @@ void Server::slotReadyRead()
                         file.close();
                         //_sleep(1);
                 }*/
-             std::thread thr([& in,& file,& str](){while(!(file.open(QIODevice::WriteOnly | QIODevice::Text)))
-                 {}
+             std::thread thr([& in,& file,& str](){while(!(file.open(QIODevice::WriteOnly | QIODevice::Text))){} //cделано для того, чтобы не пропустить записываемые данные из за того что файл используется другими приложениями(замедляет работу сокета)
                          QTextStream writeStream(&file);
                          writeStream << str;
 
